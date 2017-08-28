@@ -1,4 +1,4 @@
-pragma ^0.4.4;
+pragma solidity ^0.4.4;
 
 contract SocialChain {
     address SocialChainAdmin;
@@ -17,7 +17,7 @@ contract SocialChain {
         bytes32 city;
         bytes32 state;
         bytes32 country;
-        byrtes32[] myImages;
+        bytes32[] myImages;
     }
 
     function registerNewUser(string handle, bytes32 city, bytes32 state, bytes32 country) returns (bool) {
@@ -38,7 +38,7 @@ contract SocialChain {
         address newAddress = msg.sender;
         if (bytes(Users[newAddress].handle).length != 0) {
             if (bytes(imageURL).length != 0) {
-                if (bytes(notarizedImages[SHA256NotaryHash]).length == 0) {
+                if (bytes(notarizedImages[SHA256NotaryHash].imageURL).length == 0) {
                     imagesByNotaryHash.push(SHA256NotaryHash);
                 }
                 notarizedImages[SHA256NotaryHash].imageURL = imageURL;
@@ -58,8 +58,8 @@ contract SocialChain {
         return usersByAddress;
     }
 
-    function getUser(address userAddress) constant returns (User) {
-        return Users[userAddress];
+    function getUser(address userAddress) constant returns (string,bytes32,bytes32,bytes32,bytes32[]) {
+        return (Users[userAddress].handle,Users[userAddress].city,Users[userAddress].state,Users[userAddress].country,Users[userAddress].myImages);
     }
 
     function getAllImages() constant returns (bytes32[]) {
