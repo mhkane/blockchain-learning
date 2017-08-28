@@ -2,8 +2,8 @@ pragma ^0.4.4;
 
 contract SocialChain {
     address SocialChainAdmin;
-    mapping(bytes32 => notarizedImage) notarizedImages; // allows notarizedImage search by SHA256notaryHash
-    bytes32[] imagesByNotaryHash; // directory of images by SHA256notaryHash
+    mapping(bytes32 => notarizedImage) notarizedImages; // allows notarizedImage search by SHA256NotaryHash
+    bytes32[] imagesByNotaryHash; // directory of images by SHA256NotaryHash
     mapping(address => User) Users; // allows User search by Ethereum address
     address[] usersByAddress; // directory of Users by Ethereum adderss
 
@@ -32,5 +32,45 @@ contract SocialChain {
             return true;
         }
         return false;
+    }
+
+    function addImageToUser(string imageURL, bytes32 SHA256NotaryHash) returns (bool) {
+        address newAddress = msg.sender;
+        if (bytes(Users[newAddress].handle).length != 0) {
+            if (bytes(imageURL).length != 0) {
+                if (bytes(notarizedImages[SHA256NotaryHash]).length == 0) {
+                    imagesByNotaryHash.push(SHA256NotaryHash);
+                }
+                notarizedImages[SHA256NotaryHash].imageURL = imageURL;
+                notarizedImages[SHA256NotaryHash].timeStamp = block.timestamp;
+                Users[newAddress].myImages.push(SHA256NotaryHash);
+                return true;
+            } else {
+                return false;
+            }
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    function getUsers() constant returns (address[]) {
+        return usersByAddress;
+    }
+
+    function getUser(address userAddress) constant returns (User) {
+        return Users[userAddress];
+    }
+
+    function getAllImages() constant returns (bytes32[]) {
+        return imagesByNotaryHash;
+    }
+
+    function getUserImages(address userAddress) constant returns (bytes32[]) {
+        return Users[userAddress].myImages;
+    }
+
+    function getImage(bytes32 SHA256notaryHash) constant returns (string,uint) {
+        return (notarizedImages[SHA256notaryHash].imageURL,notarizedImages[SHA256notaryHash].timeStamp);
     }
 }
